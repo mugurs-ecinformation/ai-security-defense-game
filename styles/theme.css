@@ -1,0 +1,61 @@
+:root{
+  --neon-green:#00ff41; --neon-red:#ff3131; --neon-blue:#00d9ff; --gold:#f1c40f;
+  --bg:#050505; --panel:#0a0a0a; --text:#d1d1d1; --accent: var(--neon-blue);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg); color:var(--text); font-family:'Courier New', monospace; margin:0; display:flex; justify-content:center; align-items:center; min-height:100vh; overflow:hidden}
+#game-container{width:95vw; height:90vh; border:2px solid #333; display:grid; grid-template-columns:320px 1fr 300px; grid-template-rows:72px 1fr 170px; gap:10px; padding:10px; background:radial-gradient(circle,#111 0%,#050505 100%)}
+.header{grid-column:1 / span 3; border-bottom:1px solid #333; display:flex; align-items:center; justify-content:space-between; padding:0 16px; gap:10px}
+.header .title{display:flex; align-items:center; gap:10px}
+.controls{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+.toggle{display:inline-flex; align-items:center; gap:8px; font-size:12px; color:#bbb; background:#0c0c0c; border:1px solid #222; padding:6px 10px; border-radius:6px}
+.toggle input[type="text"]{background:#0a0a0a; color:#ddd; border:1px solid #333; padding:4px 6px; border-radius:4px}
+.toggle .mini{background:transparent; color:var(--accent); border:1px solid var(--accent); padding:3px 8px; border-radius:4px; cursor:pointer}
+.chat-panel{grid-row:2; background:var(--panel); border:1px solid #222; padding:15px; overflow:auto}
+.chat-msg{background:#161616; padding:10px; border-radius:4px; margin-bottom:12px; font-size:13px; border-left:3px solid var(--accent); animation:slideIn .3s ease}
+.main-screen{position:relative; background:#000; border:1px solid #444; padding:20px; display:flex; flex-direction:column; overflow:hidden}
+.terminal-text{color:var(--neon-green); line-height:1.6; font-size:17px; min-height:120px; white-space:pre-wrap}
+.action-zone{margin-top:auto; display:grid; gap:10px}
+.choice-btn{background:transparent; border:1px solid var(--neon-green); color:var(--neon-green); padding:14px; cursor:pointer; text-align:left; font-family:inherit; transition:.2s; border-radius:4px}
+.choice-btn:hover:not(:disabled){background:rgba(0,255,65,.1); box-shadow:0 0 15px var(--neon-green)}
+.choice-btn:disabled{opacity:.4; cursor:not-allowed}
+.metrics{background:var(--panel); border:1px solid #222; padding:20px; display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px}
+.metric-box{}
+.value{font-size:24px; font-weight:bold; color:var(--neon-green)}
+.sub{font-size:10px; color:#888}
+.badges{display:flex; flex-wrap:wrap; gap:8px; margin-top:10px}
+.badge{border:1px solid #555; color:#ddd; padding:4px 8px; font-size:11px; border-radius:4px; background:#151515; display:inline-flex; align-items:center; gap:6px}
+.badge .dot{width:8px; height:8px; border-radius:50%; display:inline-block}
+.badge.green .dot{background:#00ff41}
+.badge.blue .dot{background:#00d9ff}
+.badge.gold .dot{background:#f1c40f}
+.badge.purple .dot{background:#b36bff}
+/* Fact & End modals */
+.fact-box{position:absolute; top:16%; left:10%; right:10%; background:#1a1a1a; border:2px solid var(--gold); padding:20px; z-index:100; display:none; animation:zoomIn .4s}
+.end-modal{position:absolute; top:8%; left:6%; right:6%; bottom:8%; background:#101010; border:2px solid var(--accent); padding:20px; overflow:auto; z-index:200; display:none; animation:zoomIn .4s}
+.summary{background:#0c0c0c; border:1px solid #333; padding:12px; margin:12px 0}
+/* Mask UI */
+.mask-wrap{background:#111; border:1px solid var(--accent); padding:16px; border-radius:8px; line-height:2; font-size:18px; margin:6px 0}
+.pii{cursor:pointer; padding:2px 6px; border:1px dashed #666; border-radius:4px; position:relative; outline:none; transition:.15s}
+.pii:hover,.pii:focus{background:rgba(0,217,255,.12); box-shadow:0 0 0 2px rgba(0,217,255,.25)}
+.pii.masked{color:transparent; background:#000; border:1px solid var(--neon-green); filter:blur(.06px)}
+.pii.masked::after{content:'GEMASKEERD'; color:var(--neon-green); font-size:10px; position:absolute; top:-14px; left:0}
+.mask-controls{display:flex; gap:10px; margin-top:8px; align-self:flex-start}
+.note{font-size:12px; color:#cfcfcf}
+/* Scanner */
+.scanner{background:#080808; border:1px solid #222; padding:10px; border-radius:8px}
+.sc-head{display:flex; justify-content:space-between; align-items:center; font-size:12px; color:#aaa; margin-bottom:6px}
+.sc-stream{position:relative; height:260px; background:#000; border:1px solid #333; overflow:hidden}
+.packet{position:absolute; background:#111; border:1px solid #333; color:#ddd; padding:6px 8px; font-size:11px; cursor:pointer; animation:moveDown 5.2s linear forwards; border-radius:4px}
+.packet.safe{border-color:#444; color:#8a8a8a}
+.packet.danger{border-color:var(--neon-red); color:var(--neon-red)}
+@keyframes moveDown{from{top:-36px} to{top:100%}}
+/* Effects */
+@keyframes slideIn{from{transform:translateY(6px);opacity:0} to{transform:translateY(0);opacity:1}}
+@keyframes zoomIn{from{transform:scale(.9);opacity:0} to{transform:scale(1);opacity:1}}
+.glitch-mode{animation:glitch .1s infinite; border-color:var(--neon-red)!important}
+@keyframes glitch{0%{transform:translate(2px,1px)} 50%{transform:translate(-2px,-1px)} 100%{transform:translate(0)}}
+/* Responsive */
+@media (max-width:980px){#game-container{grid-template-columns:1fr; grid-template-rows:auto 220px 1fr auto auto; height:calc(100vh - 20px)} .header{grid-column:1} .chat-panel{order:2} .main-screen{order:3; min-height:360px} .metrics{order:4; grid-template-columns:1fr}}
+:focus-visible{outline:2px solid #7dd3ff; outline-offset:2px; border-radius:4px}
