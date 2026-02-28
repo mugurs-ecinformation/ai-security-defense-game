@@ -219,6 +219,19 @@ function formatTime(s){ const mm=String(Math.floor(s/60)).padStart(2,'0'); const
 function start(){ document.getElementById('btn-start')?.remove(); renderMission(); }
 
 document.addEventListener('DOMContentLoaded', ()=>{
+  // Oyuncu adı (gerçek isim zorunlu değil; takma ad önerilir)
+if (!PLAYER) {
+  const promptTxt = (LANG === 'nl')
+    ? 'Naam (pseudoniem is prima):'
+    : 'Name (pseudonym is fine):';
+  const val = (typeof window.prompt === 'function') ? window.prompt(promptTxt) : '';
+  if (val && val.trim()) {
+    PLAYER = val.trim();
+    localStorage.setItem('player_name', PLAYER);
+  } else {
+    PLAYER = 'Anonymous';
+  }
+}
   // language init
   const sel = document.getElementById('lang-select');
   sel.value = (localStorage.getItem('lang')||'nl'); LANG = sel.value; applyLanguage();
