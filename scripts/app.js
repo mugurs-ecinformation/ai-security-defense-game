@@ -1,3 +1,6 @@
+// ===== Leaderboard settings =====
+const WEBHOOK_URL = 'BURAYA_YAPIŞTIR';
+let PLAYER = localStorage.getItem('player_name') || null;
 // ===== i18n dictionary =====
 const I18N = {
   nl: {
