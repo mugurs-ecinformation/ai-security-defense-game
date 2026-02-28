@@ -184,6 +184,36 @@ function typeTerminal(text,i=0,done=null){ const el=document.getElementById('ter
 function getActiveMissions(){ return corporateMode ? buildCorporateMissions() : buildDefaultMissions(); }
 
 function renderMission(){ const missions=getActiveMissions(); if(step>=missions.length){ showEndScreen(); return; } const m=missions[step]; appendChat(m.msg[LANG]||m.msg['nl']); typeTerminal(m.terminal[LANG]||m.terminal['nl']); const area=document.getElementById('choices-area'); area.innerHTML=''; if(m.type==='mask'){ renderMaskMission(m); } else if(m.type==='scanner'){ renderScannerMission(m); } else { m.choices.forEach(c=>{ const b=document.createElement('button'); b.className='choice-btn'; b.textContent = c.text[LANG]||c.text['nl']; b.onclick=()=>handleChoice(m,c); area.appendChild(b); }); } document.getElementById('log-line').textContent = `${LANG==='nl'?'Missie':'Mission'} ${step+1}/${missions.length} ${LANG==='nl'?(corporateMode?'(Corporate)':'(Standaard)'):(corporateMode?'(Corporate)':'(Standard)')} …`; }
+function submitScore() {
+  try {
+    const missions = getActiveMissions();
+    const okCount   = decisions.filter(d => d.ok).length;
+    const failCount = decisions.length - okCount;
+
+    const payload = {
+      name: PLAYER,
+      mode: (corporateMode ? 'Corporate' : 'Standard'),
+      lang: LANG,
+      score: score,
+      hp: hp,
+      risk: (document.getElementById('risk-val')?.textContent || ''),
+      missions: missions.length,
+      ok: okCount,
+      fail: failCount,
+      client: navigator.userAgent || '',
+      repo: location.origin + location.pathname,
+      page: document.title || ''
+    };
+
+    // Apps Script için CORS gereksiz; no-cors yeterli
+    fetch(WEBHOOK_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    }).catch(()=>{ /* sessiz geç */ });
+  } catch (_) { /* sessiz geç */ }
+}
 
 function handleChoice(m,c){ Array.from(document.querySelectorAll('#choices-area .choice-btn')).forEach(btn=>btn.disabled=true); if(!c.ok){ hp-=34; if(hp<0) hp=0; Sound.play('snd-alarm'); document.getElementById('main-display').classList.add('glitch-mode'); setTimeout(()=>document.getElementById('main-display').classList.remove('glitch-mode'),600);} else { score+=1; Sound.play('snd-success'); }
   decisions.push({missionIndex:step, choiceText:(c.text[LANG]||c.text['nl']), ok:!!c.ok, feedback:(c.feedback[LANG]||c.feedback['nl'])}); document.getElementById('hp-val').textContent=hp+"%"; document.getElementById('score-val').textContent=String(score); refreshRiskUI(); pushBadge(); const fbText = (c.ok?"[OK] ":"[ALERT] ") + (c.feedback[LANG]||c.feedback['nl']); typeTerminal(fbText+"\n\n> " + (LANG==='nl'? 'Bekijk de casestudy.' : 'See the case study.')); document.getElementById('fact-text').textContent = (m.fact && (m.fact[LANG]||m.fact['nl'])) || ''; showFact(); }
@@ -241,6 +271,7 @@ if (!PLAYER) {
   bc.addEventListener('input', ()=>{ document.documentElement.style.setProperty('--accent', bc.value); document.documentElement.style.setProperty('--neon-blue', bc.value); });
   // logo
   const logoInput = document.getElementById('logo-url');
+  submitScore();
   document.getElementById('btn-apply-logo').addEventListener('click', ()=>{ const v=logoInput.value.trim()||'assets/logo.svg'; document.getElementById('brand-logo').src = v; localStorage.setItem('logo', v); });
   const savedLogo = localStorage.getItem('logo'); if(savedLogo){ document.getElementById('brand-logo').src=savedLogo; logoInput.value=savedLogo; }
   // toggles
